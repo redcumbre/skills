@@ -1,0 +1,18 @@
+{
+  "name": "validafirma",
+  "displayName": "ValidaFirma",
+  "version": "20",
+  "description": "Integra la firma electrónica simple de ValidaFirma (Chile) en tu sistema con un agente de código: el skill instala el CLI y lee las instrucciones vigentes en vivo.",
+  "author": {
+    "name": "REDCUMBRE SpA",
+    "url": "https://validafirma.cl"
+  },
+  "homepage": "https://validafirma.cl",
+  "repository": "https://github.com/redcumbre/skills",
+  "license": "MIT",
+  "keywords": [
+    "firma-electronica",
+    "chile",
+    "validafirma"
+  ]
+}

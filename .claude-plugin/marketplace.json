@@ -1,0 +1,15 @@
+{
+  "name": "redcumbre",
+  "description": "Skills de REDCUMBRE para agentes de código.",
+  "owner": {
+    "name": "REDCUMBRE SpA",
+    "url": "https://validafirma.cl"
+  },
+  "plugins": [
+    {
+      "name": "validafirma",
+      "source": "./",
+      "description": "Integra la firma electrónica simple de ValidaFirma (Chile) en tu sistema con un agente de código: el skill instala el CLI y lee las instrucciones vigentes en vivo."
+    }
+  ]
+}
