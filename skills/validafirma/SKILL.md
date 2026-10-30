@@ -3,7 +3,7 @@ name: validafirma
 description: "Úsala cuando te pidan integrar la firma electrónica, firmar documentos o conectar ValidaFirma a un sistema: qué es ValidaFirma, las nueve reglas que no se negocian y cómo pedir la guía con validafirma guia."
 ---
 
-<!-- validafirma v23 sha256:7fbc2b8cde845846ecaefa84047146e8d48716bbb38eb796d27b7ebcd5e740ca -->
+<!-- validafirma v26 sha256:9e379f08cf577d02bcbd87fcb15becb810b30bcdf7d0c7bdb0232307c1848614 -->
 ## ValidaFirma en tu proyecto
 
 ValidaFirma es una plataforma de firma electrónica simple para Chile: tu sistema envía un PDF y los datos de quienes firman, cada firmante verifica su identidad y firma desde su celular, y tu sistema recibe el documento firmado. Quien te encargó esto no programa: háblale de su negocio.
@@ -27,3 +27,14 @@ Este skill es corto a propósito: las instrucciones para integrar se leen en viv
 - RN-07: antes de cada operación corre `validafirma api describir <operación>`. El contrato prevalece sobre tu memoria.
 - RN-13: el MCP no es una vía de integración; no sirve para integrar.
 - RN-16: el PDF firmado se descarga desde el servidor del sistema con su llave, con `url_api_descarga` del aviso, o se envía al usuario `url_validacion` para que lo vea en el portal. `url_api_descarga`, la llave y la credencial nunca van al usuario ni a un correo, una página, una URL o un log. El código de verificación y `url_validacion` pueden ir al usuario, por correo o dentro de su sesión, pero no a una página abierta, un índice, un log ni una URL del sitio, y el `id` del documento tampoco. `url_descarga` del aviso está deprecada: deja de venir 30 días corridos después del aviso por correo, y la fecha exacta está en ese aviso y en la documentación del API.
+
+## Cierre, rechazo y cargo
+
+Al crear un documento puedes elegir cómo se cierra y qué pasa con un rechazo; la guía (`validafirma guia cierre`) y `validafirma api describir post.fes.documentos` dicen el detalle.
+
+- `politica_de_cierre` (`firman_todos` o `sella_con_quienes_firmaron`) o `requiere_todas_firmas`: `requiere_todas_firmas=false` significa «se sella con quienes firmaron», al vencer el plazo o cuando lo cierras antes con `validafirma api post.fes.documentos.documentoId.cerrar`.
+- `politica_de_rechazo` (`anula` o `no_anula`): con `no_anula` un rechazo no anula el documento. Al indicarlo, el nombre, el RUT y el cargo de quien rechazó quedan en la página de firmas del PDF y en la validación pública.
+- `nombrar_a_quienes_no_firmen`: encendido, el nombre, el RUT y el cargo de quienes no firmaron quedan en esa página y en la validación pública.
+- El `cargo` de cada firmante va dentro de `firmantes`: al crear, en el JSON de `--firmantes`; al agregar con `post.fes.documentos.documentoId.firmantes`, en `--cuerpo @archivo.json`.
+- `cumplimiento_laboral`: para contratos y otros documentos laborales. Exige `email`, el correo personal de cada firmante, también por WhatsApp o enlace.
+- Antes de usar estos campos, avísale a la persona qué datos de terceros se publican.
