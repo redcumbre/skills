@@ -3,7 +3,7 @@ name: validafirma
 description: "Úsala cuando te pidan integrar la firma electrónica, firmar documentos o conectar ValidaFirma a un sistema: qué es ValidaFirma, las nueve reglas que no se negocian y cómo pedir la guía con validafirma guia."
 ---
 
-<!-- validafirma v26 sha256:9e379f08cf577d02bcbd87fcb15becb810b30bcdf7d0c7bdb0232307c1848614 -->
+<!-- validafirma v27 sha256:5c490ca985f05038fd91db81ddb36ff57f614dcecabb577ae4c8c340f56e38a4 -->
 ## ValidaFirma en tu proyecto
 
 ValidaFirma es una plataforma de firma electrónica simple para Chile: tu sistema envía un PDF y los datos de quienes firman, cada firmante verifica su identidad y firma desde su celular, y tu sistema recibe el documento firmado. Quien te encargó esto no programa: háblale de su negocio.
@@ -33,7 +33,7 @@ Este skill es corto a propósito: las instrucciones para integrar se leen en viv
 Al crear un documento puedes elegir cómo se cierra y qué pasa con un rechazo; la guía (`validafirma guia cierre`) y `validafirma api describir post.fes.documentos` dicen el detalle.
 
 - `politica_de_cierre` (`firman_todos` o `sella_con_quienes_firmaron`) o `requiere_todas_firmas`: `requiere_todas_firmas=false` significa «se sella con quienes firmaron», al vencer el plazo o cuando lo cierras antes con `validafirma api post.fes.documentos.documentoId.cerrar`.
-- `politica_de_rechazo` (`anula` o `no_anula`): con `no_anula` un rechazo no anula el documento. Al indicarlo, el nombre, el RUT y el cargo de quien rechazó quedan en la página de firmas del PDF y en la validación pública.
+- `politica_de_rechazo` (`anula` o `no_anula`): con `no_anula` un rechazo no anula el documento. Al indicarlo, el nombre, el RUT, el cargo y la fecha del rechazo de quien rechazó, y si tiene su identidad verificada, quedan en la página de firmas del PDF y en la validación pública.
 - `nombrar_a_quienes_no_firmen`: encendido, el nombre, el RUT y el cargo de quienes no firmaron quedan en esa página y en la validación pública.
 - El `cargo` de cada firmante va dentro de `firmantes`: al crear, en el JSON de `--firmantes`; al agregar con `post.fes.documentos.documentoId.firmantes`, en `--cuerpo @archivo.json`.
 - `cumplimiento_laboral`: para contratos y otros documentos laborales. Exige `email`, el correo personal de cada firmante, también por WhatsApp o enlace.

@@ -1,7 +1,7 @@
 {
   "name": "validafirma",
   "displayName": "ValidaFirma",
-  "version": "26",
+  "version": "27",
   "description": "Integra la firma electrónica simple de ValidaFirma (Chile) en tu sistema con un agente de código: el skill instala el CLI y lee las instrucciones vigentes en vivo.",
   "author": {
     "name": "REDCUMBRE SpA",
