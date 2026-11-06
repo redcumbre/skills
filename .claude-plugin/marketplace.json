@@ -10,6 +10,11 @@
       "name": "validafirma",
       "source": "./",
       "description": "Integra la firma electrónica simple de ValidaFirma (Chile) en tu sistema con un agente de código: el skill instala el CLI y lee las instrucciones vigentes en vivo."
+    },
+    {
+      "name": "redcumbre",
+      "source": "./plugins/redcumbre",
+      "description": "Integra un proyecto con la API de REDCUMBRE (documentos tributarios electrónicos, emisores, webhooks) con un agente de código, usando el CLI redcumbre."
     }
   ]
 }
