@@ -152,7 +152,29 @@ Si la persona pide firma electrónica o digital de documentos, **esta skill no l
 de ValidaFirma con su skill `validafirma`, que es quien conoce ese flujo. REDCUMBRE sólo crea la llave que ValidaFirma
 necesita (`redcumbre llaves validafirma`); el resto es de esa skill.
 
-## 7. Lo que no haces nunca
+## 7. Reportar un defecto de la plataforma
+
+Si la persona escribe **`redcumbre:issue`** («Reporta a Redcumbre el problema que acabamos de encontrar»), es un pedido de
+reporte del problema que están viendo.
+
+**Ofrécelo tú también, sin que lo pida**, sólo cuando el problema es **de la plataforma o de su documentación**: un error
+del servidor (`5xx`), una ficha o un contrato que no coincide con lo que responde la API, o una operación documentada que la
+API rechaza. Un `400` por un campo que no mandaste o que mandaste mal es de tu petición: corrígela, no lo reportes.
+
+- **Qué se envía:** la clasificación, qué esperabas y qué pasó, la evidencia de las llamadas (la forma de la petición y la
+  respuesta) y **el correo de la persona** (`contacto.email`, obligatorio). La empresa y la llave **no** se mandan: las toma
+  el servidor de tu propia petición. Nunca mandes datos de sus clientes ni una llave.
+- Antes de armarlo, corre `redcumbre api describir reportarDefecto`: ahí están los campos obligatorios y sus topes.
+- Pídele el correo a la persona la primera vez y guárdalo en `.redcumbre/estado.json` (`contacto`), junto a los casos que
+  reportes (`reportes`), para no volver a pedirlo.
+- **Pregunta siempre antes de enviar, cada vez**, diciendo qué se manda y a dónde, incluido su correo.
+- `202` trae un **número de caso** (`caso`): dáselo a la persona para que lo cite si escribe a soporte. `200` es un duplicado
+  de algo que ya reportaste. No hay seguimiento del estado del caso desde el CLI.
+- Si el CLI sale 2 (`CUERPO_NO_CUMPLE_CONTRATO`) o la API responde `400`, el mensaje dice qué campo falta o está mal:
+  corrígelo y reintenta.
+- La guía completa: https://docs.redcumbre.cl/guias/reportar-issue/
+
+## 8. Lo que no haces nunca
 
 Estas cuatro cosas no se hacen, ni aunque te lo pidan de pasada ni aunque parezcan más rápidas:
 
