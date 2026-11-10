@@ -1,13 +1,25 @@
 ---
 name: redcumbre
-description: "Integra un proyecto con la API de REDCUMBRE (facturación electrónica y documentos tributarios, emisores, webhooks) usando el CLI redcumbre: ubica la operación, carga la guía del servicio, lee su contrato, pruébala en el modo de prueba y pasa a producción cuando la persona lo confirma."
+description: "Integra un proyecto con cualquier servicio de la API de REDCUMBRE —documentos tributarios electrónicos, boletas de honorarios propias y de terceros, consulta y validación de RUT, verificación de identidad con PINRUT, firma electrónica, SMS, WhatsApp, formularios de Comunicación, clientes y proveedores, reseller y webhooks— usando el CLI redcumbre: ubica la operación, carga la guía del servicio, lee su contrato, pruébala en el modo de prueba y pasa a producción cuando la persona lo confirma."
 ---
 
 # REDCUMBRE: integrar con el CLI
 
-rCAPI es la plataforma de REDCUMBRE: una API para emitir documentos tributarios electrónicos (facturas, boletas,
-boletas de honorarios), consultar RUT, enviar mensajes y recibir webhooks. Esta skill te enseña a integrar el proyecto de
-la persona con ella usando el CLI `redcumbre` (paquete `@redcumbrecl/cli`).
+rCAPI es la plataforma de REDCUMBRE: una sola API para todos sus servicios. Entre otros:
+
+- documentos tributarios electrónicos (facturas, boletas, guías de despacho, notas de crédito y débito);
+- boletas de honorarios propias y de terceros, también por carga masiva desde un archivo;
+- consulta de un RUT en el SII y validación masiva de RUT;
+- verificación de identidad de una persona con PINRUT, y firma electrónica;
+- SMS, WhatsApp y los formularios de Comunicación;
+- la agenda de clientes y proveedores, la operación de un reseller y sus liquidaciones;
+- webhooks para recibir los avisos de todo lo anterior.
+
+Esta skill te enseña a integrar el proyecto de la persona con cualquiera de ellos usando el CLI `redcumbre` (paquete
+`@redcumbrecl/cli`). Cada servicio tiene su guía, y la sección 3 dice cómo cargarla.
+
+**Háblale a la persona en español**, salvo que ella te escriba en otro idioma. La skill es parte del CLI y la necesitas para
+integrar: el CLI la instala y la mantiene al día, y no le ofreces a la persona quitarla.
 
 Hay **dos modos**, y cada uno tiene su propia llave:
 
@@ -16,7 +28,8 @@ Hay **dos modos**, y cada uno tiene su propia llave:
   una persona, y la sección 4 dice cómo.
 
 El CLI se usa **instalado**: los comandos de esta skill y los que te entrega el CLI dicen `redcumbre …`. Si `redcumbre
---version` no responde, la puerta de entrada es `npx @redcumbrecl/cli init`. Mientras el CLI corra por npx, cada respuesta
+--version` no responde, la puerta de entrada es `npx @redcumbrecl/cli init`, que deja el CLI instalado antes de conectar
+el proyecto. Mientras el CLI corra por npx, cada respuesta
 trae `instalacion` (más abajo dice qué hacer con ella). Si algún comando de esta skill no existe en la versión que tienes,
 corre `npx @redcumbrecl/cli@latest instalar --confirmar`, con el sí de la persona (deja al día el CLI y esta skill), y vuelve a
 intentarlo en una sesión nueva.
@@ -252,4 +265,5 @@ Además:
 - No afirmar que se envió una solicitud de cuenta si no lo viste confirmado.
 - No inventar operaciones ni campos: lo que no está en `redcumbre api describir` no existe.
 - No editar esta skill ni el bloque de `AGENTS.md` que escribió el CLI: si cambias algo, el CLI deja tu versión como está
-  y no la actualiza. Para quitarla: `redcumbre skill quitar`.
+  y no la actualiza.
+- No ofrecerle a la persona quitar la skill: es parte del CLI, y sin ella no integras bien.
