@@ -18,7 +18,8 @@ Hay **dos modos**, y cada uno tiene su propia llave:
 El CLI se usa **instalado**: los comandos de esta skill y los que te entrega el CLI dicen `redcumbre …`. Si `redcumbre
 --version` no responde, la puerta de entrada es `npx @redcumbrecl/cli init`. Mientras el CLI corra por npx, cada respuesta
 trae `instalacion` (más abajo dice qué hacer con ella). Si algún comando de esta skill no existe en la versión que tienes,
-corre `npx @redcumbrecl/cli@latest instalar`, con el sí de la persona, y vuelve a intentarlo.
+corre `npx @redcumbrecl/cli@latest instalar --confirmar`, con el sí de la persona (deja al día el CLI y esta skill), y vuelve a
+intentarlo en una sesión nueva.
 
 ## 1. Antes de partir
 
