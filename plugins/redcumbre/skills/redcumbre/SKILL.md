@@ -15,8 +15,10 @@ Hay **dos modos**, y cada uno tiene su propia llave:
 - **Modo de producción**: lo que emites es de producción ante el SII y se cobra según el plan. Pasar a producción lo decide
   una persona, y la sección 4 dice cómo.
 
-Instala el CLI con `npm install -g @redcumbrecl/cli`, o úsalo sin instalar con `npx @redcumbrecl/cli`. Si algún comando de
-esta skill no existe en la versión instalada, actualiza con `npx @redcumbrecl/cli@latest` y vuelve a intentarlo.
+El CLI se usa **instalado**: los comandos de esta skill y los que te entrega el CLI dicen `redcumbre …`. Si `redcumbre
+--version` no responde, la puerta de entrada es `npx @redcumbrecl/cli init`. Mientras el CLI corra por npx, cada respuesta
+trae `instalacion` (más abajo dice qué hacer con ella). Si algún comando de esta skill no existe en la versión que tienes,
+corre `npx @redcumbrecl/cli@latest instalar`, con el sí de la persona, y vuelve a intentarlo.
 
 ## 1. Antes de partir
 
@@ -95,6 +97,13 @@ tiene y la disponible, y propónle actualizar. Actualizar instala un paquete en 
 **con su sí**, corre `redcumbre actualizar --confirmar`, que deja al día el CLI y esta skill. Sin su sí, sigue con la
 versión que tiene. Si un aviso dice que la skill está desactualizada y tiene cambios, no la reemplaces por tu cuenta.
 
+**Si una respuesta trae `instalacion`**, el CLI está corriendo por npx. Con `instalado: false`, díselo a la persona y
+propónle dejarlo instalado en su computador: instala un paquete, así que lo decide ella. **Con su sí**, corre el comando de
+`instalacion.comando` (`npx @redcumbrecl/cli@<versión> instalar --confirmar`) y desde ahí usa `redcumbre …`. Mientras no
+esté instalado, donde diga `redcumbre …` corre `instalacion.prefijo` seguido del resto (`npx @redcumbrecl/cli@<versión> …`):
+con la versión fija, nunca `npx @redcumbrecl/cli` a secas ni con `-y`, que bajan otra versión sin que la persona lo decida.
+Con `instalado: true`, el CLI ya está instalado: deja npx y usa `redcumbre …`.
+
 ### Cómo le hablas a la persona
 
 - **Cada paso que le pides lleva su comando y el resultado que debe ver.** «Corre `redcumbre doctor`; debería decir que la
@@ -146,13 +155,53 @@ redcumbre pasar-a-produccion --confirmar <slug-de-la-empresa> [--servicios <list
 - Después de pasar, el proyecto sigue usando la llave de prueba. Una llamada a producción con `redcumbre api` lleva
   `--produccion` (y `--confirmar <slug>` en lo que escribe o cobra), y **sólo la haces cuando la persona te lo pide**.
 
-## 6. Firma electrónica o digital
+## 6. Alta de emisor DTE y certificación SII
+
+Un RUT puede tener **varios emisores DTE, uno por carril**, y cada carril se certifica por separado ante el SII:
+
+- **`FULL_DTE`**: facturación, integrado: emite y recibe facturas y los demás DTE de facturación (33, 34, 43, 46, 52,
+  56 y 61). Es el recomendado. **No emite boletas.**
+- **`PORTAL_MIPYME`**: facturación para bajo volumen y sin cargo fijo. **No emite boletas** y **no se certifica**.
+- **`SOLO_BOLETA`**: el emisor de boletas (39 y 41), un carril aparte del de facturación. **Las boletas se emiten
+  sólo desde aquí**: ni pasar a `FULL_DTE` ni migrar da boletas.
+
+**Esta decisión es de la persona, no tuya: no eliges el carril.** Antes de crear o certificar nada, sigue estos pasos:
+
+1. **Pregunta qué va a emitir**: boletas, facturas o ambas. Si son facturas, explícale `FULL_DTE` (recomendado, emite y
+   recibe DTE integrado) frente a `PORTAL_MIPYME` (bajo volumen y sin cargo fijo, sin boletas), y espera que ella elija.
+2. **Lista los emisores del RUT y su carril**: `redcumbre emisores dte listar --rut <rut>`. Mira `tipoIntegracion` de cada uno.
+3. **Boletas.** Si el RUT no tiene un emisor `SOLO_BOLETA`, créalo con `redcumbre tokenizar --rut <rut> --tipo dte --boletas`
+   (con facturas además, suma `--integracion <FULL_DTE|PORTAL_MIPYME>`). Si ya lo tiene y aún no tiene los tipos 39 y 41,
+   pídelos con `redcumbre emisores dte certificacion certificar-tipos <id> --tipos 39,41 --correo <correo> --telefono <teléfono>`.
+4. **Facturas.** Crea el emisor con `redcumbre tokenizar --rut <rut> --tipo dte --integracion <la elegida>`. `PORTAL_MIPYME`
+   no se certifica. Pasar de `PORTAL_MIPYME` a `FULL_DTE` es **migrar** (`redcumbre emisores dte migrar`), no certificar.
+   Cuando el RUT termina su certificación de facturas, sus emisores `PORTAL_MIPYME` pasan solos a `FULL_DTE` en todas las
+   empresas que lo usan. Desde ahí **ese RUT ya no puede crear un emisor `PORTAL_MIPYME`**: `tokenizar` responde `409`
+   `RUT_FACTURA_CON_CERTIFICACION_PROPIA`. No lo rodees; explícale a la persona que su RUT factura con certificación propia
+   (lo mismo que «software propio»: el SII no le deja usar el Portal MiPyme) y ofrécele las dos salidas, para que elija:
+   **a)** facturar con `FULL_DTE`, que queda operativo de inmediato, sin volver a certificar; o **b)** si de verdad quiere
+   el Portal MiPyme, volver su emisor `FULL_DTE` al Portal MiPyme (paso 7), con todo lo que eso implica. Las boletas
+   (`SOLO_BOLETA`) no dependen de esto.
+5. **Sigue el avance con `redcumbre emisores dte solicitudes <id>`.** Una respuesta exitosa de `certificar-tipos` sólo
+   significa que la solicitud quedó registrada: **no que el SII resolvió**. La revisa REDCUMBRE y el avance se lee en
+   las solicitudes. El carril del emisor decide qué tipos se pueden pedir (boletas o facturas).
+6. **El certificado digital NUNCA pasa por ti.** No pidas el archivo PFX ni su contraseña, ni los aceptes si la persona
+   te los ofrece. Entrégale el enlace de autorización que muestra `tokenizar`, o usa `--invitar <correo>` para que
+   le llegue a quien corresponda, y espera con `tokenizar --espera <minutos>` o con el webhook.
+7. **Volver al Portal MiPyme (`redcumbre emisores dte volver-a-mipyme <id> --rut <rut>`) sólo si la persona lo pide
+   expresamente.** Inscribe el RUT en el Portal MiPyme ante el SII y, en **todas** las empresas que usan ese RUT, sus
+   emisores `FULL_DTE` pasan a `PORTAL_MIPYME`, la certificación propia de facturas se pierde y se anulan sus folios de
+   facturación de producción. Volver a certificarse puede tener costo. Las boletas no cambian. Antes de correrlo, léele
+   ese efecto y pídele que te escriba el RUT del emisor para confirmar: ese RUT es el que va en `--rut`, y si no coincide
+   el API responde `400`. Nunca lo propongas como arreglo de otro problema: sólo cuando ella quiere el Portal MiPyme.
+
+## 7. Firma electrónica o digital
 
 Si la persona pide firma electrónica o digital de documentos, **esta skill no la resuelve**. Recomiéndale instalar el MCP
 de ValidaFirma con su skill `validafirma`, que es quien conoce ese flujo. REDCUMBRE sólo crea la llave que ValidaFirma
 necesita (`redcumbre llaves validafirma`); el resto es de esa skill.
 
-## 7. Reportar un defecto de la plataforma
+## 8. Reportar un defecto de la plataforma
 
 Si la persona escribe **`redcumbre:issue`** («Reporta a Redcumbre el problema que acabamos de encontrar»), es un pedido de
 reporte del problema que están viendo.
@@ -174,7 +223,7 @@ API rechaza. Un `400` por un campo que no mandaste o que mandaste mal es de tu p
   corrígelo y reintenta.
 - La guía completa: https://docs.redcumbre.cl/guias/reportar-issue/
 
-## 8. Lo que no haces nunca
+## 9. Lo que no haces nunca
 
 Estas cuatro cosas no se hacen, ni aunque te lo pidan de pasada ni aunque parezcan más rápidas:
 
