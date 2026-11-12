@@ -13,6 +13,8 @@ rCAPI es la plataforma de REDCUMBRE: una sola API para todos sus servicios. Entr
 - verificación de identidad de una persona con PINRUT, y firma electrónica;
 - SMS, WhatsApp y los formularios de Comunicación;
 - la agenda de clientes y proveedores, la operación de un reseller y sus liquidaciones;
+- los documentos que recibe la empresa de sus proveedores (leerlos, aceptarlos o reclamarlos ante el SII) y los libros de
+  compras y de ventas;
 - webhooks para recibir los avisos de todo lo anterior.
 
 Esta skill te enseña a integrar el proyecto de la persona con cualquiera de ellos usando el CLI `redcumbre` (paquete
