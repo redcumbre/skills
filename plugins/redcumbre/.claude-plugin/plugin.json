@@ -1,7 +1,7 @@
 {
   "name": "redcumbre",
   "displayName": "REDCUMBRE",
-  "version": "8",
+  "version": "9",
   "description": "Integra un proyecto con la API de REDCUMBRE (documentos tributarios electrónicos, emisores, webhooks) con un agente de código, usando el CLI redcumbre.",
   "author": { "name": "REDCUMBRE SpA", "url": "https://redcumbre.cl" },
   "homepage": "https://docs.redcumbre.cl/cli/",
