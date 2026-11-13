@@ -1,6 +1,6 @@
 ---
 name: redcumbre
-description: "Integra un proyecto con cualquier servicio de la API de REDCUMBRE —documentos tributarios electrónicos, boletas de honorarios propias y de terceros, consulta y validación de RUT, verificación de identidad con PINRUT, firma electrónica, SMS, WhatsApp, formularios de Comunicación, clientes y proveedores, reseller y webhooks— usando el CLI redcumbre: ubica la operación, carga la guía del servicio, lee su contrato, pruébala en el modo de prueba y pasa a producción cuando la persona lo confirma."
+description: "Integra un proyecto con cualquier servicio de la API de REDCUMBRE —documentos tributarios electrónicos, boletas de honorarios propias y de terceros, consulta y validación de RUT, verificación de identidad con PINRUT, firma electrónica, SMS, WhatsApp, formularios de Comunicación y su configuración (perfiles y marcas, perfil y encendido de un asistente, propósito de sus fuentes), clientes y proveedores, reseller y webhooks— usando el CLI redcumbre: ubica la operación, carga la guía del servicio, lee su contrato, pruébala en el modo de prueba y pasa a producción cuando la persona lo confirma."
 ---
 
 # REDCUMBRE: integrar con el CLI
@@ -12,6 +12,8 @@ rCAPI es la plataforma de REDCUMBRE: una sola API para todos sus servicios. Entr
 - consulta de un RUT en el SII y validación masiva de RUT;
 - verificación de identidad de una persona con PINRUT, y firma electrónica;
 - SMS, WhatsApp y los formularios de Comunicación;
+- la configuración de Comunicación: perfiles y marcas, el perfil y el encendido de cada asistente y para qué sirve cada
+  fuente de conocimiento (su ficha es `comunicacion-configuracion`, y la sección 3 dice cómo cargarla);
 - la agenda de clientes y proveedores, la operación de un reseller y sus liquidaciones;
 - los documentos que recibe la empresa de sus proveedores (leerlos, aceptarlos o reclamarlos ante el SII) y los libros de
   compras y de ventas;
@@ -27,7 +29,7 @@ Hay **dos modos**, y cada uno tiene su propia llave:
 
 - **Modo de prueba**: lo que emites no llega al SII, no consume folios y no se cobra. Trabajas siempre aquí.
 - **Modo de producción**: lo que emites es de producción ante el SII y se cobra según el plan. Pasar a producción lo decide
-  una persona, y la sección 4 dice cómo.
+  una persona, y la sección 5 dice cómo. Los precios de cada operación los da `redcumbre:tarifas` (sección 9).
 
 El CLI se usa **instalado**: los comandos de esta skill y los que te entrega el CLI dicen `redcumbre …`. Si `redcumbre
 --version` no responde, la puerta de entrada es `npx @redcumbrecl/cli init`, que deja el CLI instalado antes de conectar
@@ -53,6 +55,10 @@ intentarlo en una sesión nueva.
 4. Si falta conectar el proyecto, corre `redcumbre init --sin-navegador`. Deja la llave de prueba en `keys/`, un puntero
    en `.env` (`REDCUMBRE_LLAVE_PRUEBA`), esta skill y una comprobación con la llave. No emite nada y no escribe código del
    proyecto: el código lo escribes tú, con las herramientas del lenguaje que usa el proyecto.
+5. Cuando `init` termina bien, trae el **aviso de cobros** en `bienvenida.aviso`. Transmíteselo a la persona **tal cual,
+   una sola vez**, en ese momento. Es el único aviso de cobros: después no repites en cada operación si se cobra o no; si
+   la persona lo pregunta, respondes con `redcumbre:tarifas` (sección 9). Lo mismo cuando `redcumbre actualizar` deja el
+   CLI en una versión nueva y trae `bienvenida`.
 
 ### Sin cuenta
 
@@ -89,7 +95,8 @@ Para cada cosa que el proyecto necesite de REDCUMBRE, sigue este orden:
 1. **Ubicar** la operación: `redcumbre buscar "<lo que quieres hacer>"` (si tu versión del CLI aún no trae `buscar`, usa
    `redcumbre api buscar "<texto>"`). Busca por lo que se quiere hacer («emitir una boleta de honorarios»), sin datos de
    una persona: la búsqueda encuentra operaciones por la tarea, y un RUT, un nombre, un correo o un teléfono no ayudan.
-2. **Leer** su contrato: `redcumbre api describir <operación>` muestra parámetros, cuerpo, efecto y cobro. No inventes
+2. **Leer** su contrato: `redcumbre api describir <operación>` muestra parámetros, cuerpo, efecto y la métrica de cobro (el precio
+   depende del plan y lo da `redcumbre:tarifas`). No inventes
    campos: usa los del contrato.
 3. **Ejecutar** con `redcumbre api <operación>`, **primero con `--ensayo`**, que muestra la petición sin hacerla.
    Recién después, sin `--ensayo`, con la llave de prueba. Pasa los datos con `--param clave=valor` y `--cuerpo`.
@@ -162,7 +169,9 @@ se cobra según tu plan**.
 corras por tu cuenta ni porque "ya funciona en prueba".
 
 **Al terminar en modo de prueba**, no cierres sin esto: presenta a la persona lo que la ficha del producto dice en «Antes de
-pasar a producción» (qué cambia, qué cuesta, qué falta de su lado) y pregúntale si quiere pasar. Si no quiere, el proyecto
+pasar a producción» (qué cambia y qué falta de su lado) y pregúntale si quiere pasar. Lo que cuesta no sale de la ficha:
+depende de su plan y lo ve en el panel web, en la sección Mi suscripción (antes de pasar no hay llave de producción para
+`redcumbre tarifas --produccion`). Si no quiere, el proyecto
 queda en modo de prueba y lo dices en el reporte final.
 
 Con la confirmación de la persona:
@@ -249,7 +258,21 @@ API rechaza. Un `400` por un campo que no mandaste o que mandaste mal es de tu p
   corrígelo y reintenta.
 - La guía completa: https://docs.redcumbre.cl/guias/reportar-issue/
 
-## 9. Lo que no haces nunca
+## 9. Consultar las tarifas
+
+Si la persona escribe **`redcumbre:tarifas`** («¿cuánto me cuesta esto?», «qué se cobra»), es un pedido de los precios de
+sus operaciones según su plan.
+
+- Corre `redcumbre tarifas [<operación>] --json`, con `--produccion` si la empresa ya pasó a producción. Sin operación
+  lista todas; con una (`operationId`), sólo esa.
+- **En modo de prueba nada se cobra**: el CLI lo responde así y tú lo dices así, sin precios.
+- En producción, por cada operación: su métrica, lo incluido en el plan, lo usado, el precio de la siguiente unidad y si
+  cruza el umbral de un tramo. Una métrica que el plan no cobra sale con precio 0: dilo como «tu plan no la cobra», no la
+  omitas. Los números son los del API: no calcules ni redondees.
+- Si sale 5 porque no hay llave de producción, los precios están en el panel web, en la sección Mi suscripción.
+- Fuera de este pedido no adviertes cobros por operación: el aviso de cobros se dio una vez, al conectar el proyecto.
+
+## 10. Lo que no haces nunca
 
 Estas cuatro cosas no se hacen, ni aunque te lo pidan de pasada ni aunque parezcan más rápidas:
 
