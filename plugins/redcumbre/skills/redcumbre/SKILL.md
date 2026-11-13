@@ -36,7 +36,12 @@ El CLI se usa **instalado**: los comandos de esta skill y los que te entrega el 
 el proyecto. Mientras el CLI corra por npx, cada respuesta
 trae `instalacion` (más abajo dice qué hacer con ella). Si algún comando de esta skill no existe en la versión que tienes,
 corre `npx @redcumbrecl/cli@latest instalar`, sin preguntarle a la persona (deja al día el CLI y esta skill), y vuelve a
-intentarlo en una sesión nueva.
+intentarlo.
+
+**Esta skill y los comandos `/redcumbre:*` los deja instalados y al día el propio CLI**, en la versión que corre: al
+instalarlo o actualizarlo y en cada comando, también `redcumbre --version`. No tienes que alinearla tú ni elegir entre
+`actualizar`, `instalar` u otra sesión. Si tu sesión ya había cargado una versión anterior, la nueva se carga en la
+próxima sesión.
 
 ## 1. Antes de partir
 
