@@ -235,7 +235,7 @@ necesita (`redcumbre llaves validafirma`); el resto es de esa skill.
 
 ## 8. Reportar un defecto de la plataforma
 
-Si la persona escribe **`redcumbre:issue`** («Reporta a Redcumbre el problema que acabamos de encontrar»), es un pedido de
+Si la persona escribe **`redcumbre:issue`** —en Claude Code, el comando `/redcumbre:issue`— («Reporta a Redcumbre el problema que acabamos de encontrar»), es un pedido de
 reporte del problema que están viendo.
 
 **Ofrécelo tú también, sin que lo pida**, sólo cuando el problema es **de la plataforma o de su documentación**: un error
@@ -257,7 +257,7 @@ API rechaza. Un `400` por un campo que no mandaste o que mandaste mal es de tu p
 
 ## 9. Consultar las tarifas
 
-Si la persona escribe **`redcumbre:tarifas`** («¿cuánto me cuesta esto?», «qué se cobra»), es un pedido de los precios de
+Si la persona escribe **`redcumbre:tarifas`** —en Claude Code, el comando `/redcumbre:tarifas`— («¿cuánto me cuesta esto?», «qué se cobra»), es un pedido de los precios de
 sus operaciones según su plan.
 
 - Corre `redcumbre tarifas [<operación>] --json`, con `--produccion` si la empresa ya pasó a producción. Sin operación
