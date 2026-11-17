@@ -1,6 +1,6 @@
 ---
 name: redcumbre
-description: "Integra un proyecto con cualquier servicio de la API de REDCUMBRE —documentos tributarios electrónicos, boletas de honorarios propias y de terceros, consulta y validación de RUT, verificación de identidad con PINRUT, firma electrónica, SMS, WhatsApp, formularios de Comunicación y su configuración (perfiles y marcas, perfil y encendido de un asistente, propósito de sus fuentes), clientes y proveedores, reseller y webhooks— usando el CLI redcumbre: ubica la operación, carga la guía del servicio, lee su contrato, pruébala en el modo de prueba y pasa a producción cuando la persona lo confirma."
+description: "Integra un proyecto con cualquier servicio de la API de REDCUMBRE —documentos tributarios electrónicos, boletas de honorarios propias y de terceros, consulta y validación de RUT, verificación de identidad con PINRUT, firma electrónica, SMS, WhatsApp, formularios de Comunicación y la configuración de sus asistentes (crearlos, archivarlos y restaurarlos, vincular sus fuentes, perfiles y marcas, perfil y encendido de un asistente, propósito de sus fuentes), folios y configuración de la empresa (CAF, ValidaFirma y sus topes, logo, modos de emisión, plantillas, llamadas de las llaves, suscripción, PIN, canal de agentes, ventas, correo), usuarios y organización de la empresa (personas, roles, grupos de roles, grupos de personas, áreas, puestos y sucursales de las personas), clientes y proveedores, reseller y webhooks— usando el CLI redcumbre: ubica la operación, carga la guía del servicio, lee su contrato, pruébala en el modo de prueba y pasa a producción cuando la persona lo confirma."
 ---
 
 # REDCUMBRE: integrar con el CLI
@@ -12,12 +12,33 @@ rCAPI es la plataforma de REDCUMBRE: una sola API para todos sus servicios. Entr
 - consulta de un RUT en el SII y validación masiva de RUT;
 - verificación de identidad de una persona con PINRUT, y firma electrónica;
 - SMS, WhatsApp y los formularios de Comunicación;
-- la configuración de Comunicación: perfiles y marcas, el perfil y el encendido de cada asistente y para qué sirve cada
-  fuente de conocimiento (su ficha es `comunicacion-configuracion`, y la sección 3 dice cómo cargarla);
+- la configuración de los asistentes de Comunicación: crearlos, archivarlos y restaurarlos, vincular y desvincular sus fuentes de
+  conocimiento, perfiles y marcas, el perfil y el encendido de cada asistente y para qué sirve cada fuente (su ficha es
+  `comunicacion-configuracion`, y la sección 3 dice cómo cargarla);
+- los folios (CAF) de la empresa: subir un CAF, solicitar y anular folios ante el SII y la solicitud automática;
+- la configuración de la empresa: la conexión con ValidaFirma y sus topes, el logo, los modos de emisión, la caché de
+  contribuyentes, la información de pago y las plantillas de los documentos, el registro de llamadas de las llaves, la
+  suscripción, las integraciones de PIN, el canal de agentes, las casillas y los campos de la nota de ventas, y el correo
+  (identidades y plantillas de correo);
+- los usuarios y la organización de la empresa, en siete subgrupos del CLI: `usuarios` (invitar, editar, quitar, roles,
+  sesiones, restablecer la clave y el PIN del puesto), `roles` (el catálogo que una llave puede asignar), `grupos-de-roles`,
+  `grupos-de-personas`, `areas`, `puestos` (su configuración y consulta) y `sucursales-de-usuarios` (su ficha es
+  `usuarios-y-organizacion` y su guía `usuarios`). Lo que la llave no hace: asignar SUPER-ADMIN, MASTER ni roles de máquina,
+  tocar a una persona intocable, dar de alta a alguien con una clave (el alta es sólo por invitación), ni recibir la clave en
+  un restablecimiento (sólo envía el correo); y registrar un puesto, «este navegador», reconectar, anular y levantar el
+  bloqueo siguen siendo de una persona en el panel;
+- el alta directa de emisores con certificado y la administración de certificados (`redcumbre emisores dte crear`,
+  `redcumbre emisores tributarios crear`, `certificado-subir` y `certificado-quitar` del emisor tributario,
+  `redcumbre emisores representantes renovar-cert` y `redcumbre certificados` con `subir`, `listar`, `ver`, `verificar` y `eliminar`; su
+  ficha es `emisores-y-tokenizacion`). **Exigen el servicio «Alta de emisores con certificado por API» habilitado en la
+  empresa**: sin él, la llave recibe `403` también en el modo de prueba, y lo activa REDCUMBRE (o el reseller de la
+  empresa), no tú;
 - la agenda de clientes y proveedores, la operación de un reseller y sus liquidaciones;
 - los documentos que recibe la empresa de sus proveedores (leerlos, aceptarlos o reclamarlos ante el SII) y los libros de
   compras y de ventas;
-- webhooks para recibir los avisos de todo lo anterior.
+- webhooks para recibir los avisos de todo lo anterior, y su configuración con la llave: `redcumbre webhooks configuracion`
+  (`ver`, `crear`, `actualizar`, `regenerar-secreto`) y `redcumbre webhooks entregas` (`listar`, `ver`). El secreto de firma sale
+  una sola vez, al crear o regenerar: guárdalo en el momento, no se vuelve a mostrar (su ficha es `webhooks`).
 
 Esta skill te enseña a integrar el proyecto de la persona con cualquiera de ellos usando el CLI `redcumbre` (paquete
 `@redcumbrecl/cli`). Cada servicio tiene su guía, y la sección 3 dice cómo cargarla.
@@ -222,9 +243,14 @@ Un RUT puede tener **varios emisores DTE, uno por carril**, y cada carril se cer
 5. **Sigue el avance con `redcumbre emisores dte solicitudes <id>`.** Una respuesta exitosa de `certificar-tipos` sólo
    significa que la solicitud quedó registrada: **no que el SII resolvió**. La revisa REDCUMBRE y el avance se lee en
    las solicitudes. El carril del emisor decide qué tipos se pueden pedir (boletas o facturas).
-6. **El certificado digital NUNCA pasa por ti.** No pidas el archivo PFX ni su contraseña, ni los aceptes si la persona
-   te los ofrece. Entrégale el enlace de autorización que muestra `tokenizar`, o usa `--invitar <correo>` para que
-   le llegue a quien corresponda, y espera con `tokenizar --espera <minutos>` o con el webhook.
+6. **El certificado digital no se pide ni se pega en la conversación.** No pidas el archivo PFX ni su contraseña, ni los
+   aceptes si la persona te los ofrece en el chat. Por defecto entrégale el enlace de autorización que muestra `tokenizar`, o
+   usa `--invitar <correo>` para que le llegue a quien corresponda, y espera con `tokenizar --espera <minutos>` o con el
+   webhook. **Excepción: el alta directa**, sólo si la empresa tiene el servicio «Alta de emisores con certificado por API»
+   y la persona te indica la ruta de su `.pfx`: lo subes con `--archivo <ruta>` y la clave **nunca** va como argumento
+   (`--clave-desde-stdin`, una variable de entorno o el prompt oculto); en el modo de prueba sólo se rechazan la falta del
+   servicio y una clave que no abre el archivo. El archivo y la clave no vuelven en ninguna respuesta. La clave tributaria
+   nunca entra por la línea de comandos.
 7. **Volver al Portal MiPyme (`redcumbre emisores dte volver-a-mipyme <id> --rut <rut>`) sólo si la persona lo pide
    expresamente.** Inscribe el RUT en el Portal MiPyme ante el SII y, en **todas** las empresas que usan ese RUT, sus
    emisores `FULL_DTE` pasan a `PORTAL_MIPYME`, la certificación propia de facturas se pierde y se anulan sus folios de
